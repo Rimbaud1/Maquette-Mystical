@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mystical Dungeons</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=MedievalSharp&display=swap');
+        
+        body {
+            font-family: 'MedievalSharp', cursive;
+            background-color: #0f0e17;
+            color: #e8e8e8;
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(255, 137, 6, 0.08) 0%, transparent 20%),
+                radial-gradient(circle at 90% 80%, rgba(229, 49, 112, 0.08) 0%, transparent 20%);
+        }
+        
+        .hero-gradient {
+            background: linear-gradient(135deg, rgba(15, 14, 23, 0.9) 0%, rgba(26, 26, 46, 0.95) 100%);
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #ff8906 0%, #e53170 100%);
+            transition: all 0.3s;
+            box-shadow: 0 4px 18px rgba(229, 49, 112, 0.35);
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 24px rgba(229, 49, 112, 0.45);
+        }
+        
+        .player-card {
+            background: rgba(26, 26, 46, 0.85);
+            border: 1px solid rgba(255, 137, 6, 0.25);
+            transition: all 0.3s;
+        }
+        
+        .player-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(255, 137, 6, 0.2);
+        }
+        
+        .text-gradient {
+            background: linear-gradient(135deg, #ff8906 0%, #e53170 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="bg-gray-900/80 backdrop-blur-md border-b border-amber-500/20 py-4 fixed w-full z-10">
+        <div class="container mx-auto px-4 flex justify-between items-center">
+            <div class="flex items-center">
+                <i class="fas fa-dungeon text-2xl text-amber-500 mr-2"></i>
+                <span class="text-xl font-bold text-gradient">Mystical Dungeons</span>
+            </div>
+            <div class="hidden md:flex space-x-6">
+                <a href="#" class="text-gray-300 hover:text-amber-400"><i class="fas fa-home mr-1"></i> Home</a>
+                <a href="#" class="text-gray-300 hover:text-amber-400"><i class="fas fa-play mr-1"></i> Play</a>
+                <a href="#" class="text-gray-300 hover:text-amber-400"><i class="fas fa-map mr-1"></i> Create</a>
+                <a href="#" class="text-gray-300 hover:text-amber-400"><i class="fas fa-sign-in-alt mr-1"></i> Login</a>
+            </div>
+            <button class="md:hidden text-gray-300">
+                <i class="fas fa-bars text-xl"></i>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero-gradient min-h-screen flex items-center pt-16 pb-20 px-4">
+        <div class="container mx-auto">
+            <div class="max-w-3xl mx-auto text-center">
+                <h1 class="text-5xl md:text-6xl font-bold mb-6 text-gradient">Mystical Dungeons</h1>
+                <p class="text-xl text-gray-300 mb-8">
+                    Explore randomly generated dungeons, create your own mazes, and challenge the community's creations.
+                </p>
+                <div class="flex flex-col sm:flex-row justify-center gap-4">
+                    <a href="#" class="btn-primary px-8 py-3 rounded-lg text-white font-bold">
+                        <i class="fas fa-play mr-2"></i> Play Now
+                    </a>
+                    <a href="#" class="bg-gray-800 hover:bg-gray-700 px-8 py-3 rounded-lg text-white font-bold border border-amber-500/30">
+                        <i class="fas fa-map mr-2"></i> Create Map
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Top Players -->
+    <section class="py-16 px-4 bg-gray-900/50">
+        <div class="container mx-auto">
+            <h2 class="text-3xl font-bold mb-12 text-center text-gradient">
+                <i class="fas fa-crown mr-2"></i> Top Players
+            </h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
+                <!-- Player 1 -->
+                <div class="player-card rounded-lg p-6">
+                    <div class="flex items-center mb-4">
+                        <img src="./wizard-2-16190832.webp" alt="Player" class="w-12 h-12 rounded-full border-2 border-amber-500">
+                        <div class="ml-4">
+                            <h3 class="text-xl font-bold text-amber-400">Eldrin</h3>
+                        </div>
+                    </div>
+                    <div class="flex justify-between">
+                        <div>
+                            <p class="text-gray-400">Wins</p>
+                            <p class="text-xl font-bold">172</p>
+                        </div>
+                        <div>
+                            <p class="text-gray-400">Losses</p>
+                            <p class="text-xl font-bold">15</p>
+                        </div>
+                        <div>
+                            <p class="text-gray-400">Winrate</p>
+                            <p class="text-xl font-bold text-green-400">92%</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Player 2 -->
+                <div class="player-card rounded-lg p-6">
+                    <div class="flex items-center mb-4">
+                        <img src="./wizard-2-16190832.webp" alt="Player" class="w-12 h-12 rounded-full border-2 border-amber-500">
+                        <div class="ml-4">
+                            <h3 class="text-xl font-bold text-amber-400">Vex</h3>
+                        </div>
+                    </div>
+                    <div class="flex justify-between">
+                        <div>
+                            <p class="text-gray-400">Wins</p>
+                            <p class="text-xl font-bold">156</p>
+                        </div>
+                        <div>
+                            <p class="text-gray-400">Losses</p>
+                            <p class="text-xl font-bold">21</p>
+                        </div>
+                        <div>
+                            <p class="text-gray-400">Winrate</p>
+                            <p class="text-xl font-bold text-green-400">88%</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Player 3 -->
+                <div class="player-card rounded-lg p-6">
+                    <div class="flex items-center mb-4">
+                        <img src="./wizard-2-16190832.webp" alt="Player" class="w-12 h-12 rounded-full border-2 border-amber-500">
+                        <div class="ml-4">
+                            <h3 class="text-xl font-bold text-amber-400">Thorne</h3>
+                        </div>
+                    </div>
+                    <div class="flex justify-between">
+                        <div>
+                            <p class="text-gray-400">Wins</p>
+                            <p class="text-xl font-bold">142</p>
+                        </div>
+                        <div>
+                            <p class="text-gray-400">Losses</p>
+                            <p class="text-xl font-bold">25</p>
+                        </div>
+                        <div>
+                            <p class="text-gray-400">Winrate</p>
+                            <p class="text-xl font-bold text-green-400">85%</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Game Description -->
+    <section class="py-16 px-4">
+        <div class="container mx-auto max-w-4xl">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold mb-4 text-gradient">The Game</h2>
+                <p class="text-xl text-gray-300">
+                    Mystical Dungeons is an online maze game set in a medieval fantasy universe.
+                </p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div>
+                    <h3 class="text-2xl font-bold text-amber-400 mb-4">Features</h3>
+                    <ul class="space-y-3 text-gray-300">
+                        <li class="flex items-start">
+                            <i class="fas fa-random text-amber-500 mt-1 mr-3"></i>
+                            <span>Random dungeon generator and 4 base difficulty levels</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fas fa-edit text-amber-500 mt-1 mr-3"></i>
+                            <span>Custom map creation and sharing with all players</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fas fa-lightbulb text-amber-500 mt-1 mr-3"></i>
+                            <span>Integrated solver to find solutions</span>
+                        </li>
+                    </ul>
+                </div>
+                <div class="flex justify-center items-center">
+                    <img src="./laby1.png" alt="Preview" class="rounded-lg border border-amber-500/30 shadow-lg">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Final CTA -->
+    <section class="py-16 px-4 bg-gray-900/50">
+        <div class="container mx-auto text-center">
+            <h2 class="text-3xl font-bold mb-6 text-gradient">Ready to explore?</h2>
+            <p class="text-xl text-gray-300 mb-8 max-w-2xl mx-auto">
+                Join our community of adventurers and begin your quest today!
+            </p>
+            <a href="#" class="btn-primary inline-block px-8 py-3 rounded-lg text-white font-bold text-lg">
+                <i class="fas fa-play mr-2"></i> Play for Free
+            </a>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="py-8 px-4 border-t border-gray-800">
+        <div class="container mx-auto text-center">
+            <p class="text-gray-500">
+                © 2025 Mystical Dungeons. All rights reserved.
+            </p>
+        </div>
+    </footer>
+
+    <script>
+        // Simple redirect for non-logged users
+        const isLoggedIn = false; // Change to true to test logged state
+        
+        document.querySelectorAll('.btn-primary, .btn-secondary, .player-card').forEach(element => {
+            element.addEventListener('click', function(e) {
+                if (!isLoggedIn) {
+                    e.preventDefault();
+                    alert('Please login to access this feature');
+                    window.location.href = '#login';
+                }
+            });
+        });
+    </script>
+</body>
+</html>

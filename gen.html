@@ -1,0 +1,706 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Générateur de Labyrinthe Mystique</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=MedievalSharp&display=swap');
+        
+        body {
+            font-family: 'MedievalSharp', cursive;
+            background-color: #0f0e17;
+            color: #e8e8e8;
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(255, 137, 6, 0.05) 0%, transparent 20%),
+                radial-gradient(circle at 90% 80%, rgba(229, 49, 112, 0.05) 0%, transparent 20%);
+        }
+        
+        .container {
+            background: rgba(26, 26, 46, 0.8);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 137, 6, 0.2);
+            box-shadow: 0 0 30px rgba(255, 137, 6, 0.1);
+        }
+        
+        .form-input {
+            background: rgba(58, 58, 58, 0.5);
+            border: 1px solid rgba(255, 137, 6, 0.3);
+            transition: all 0.3s;
+        }
+        
+        .form-input:focus {
+            border-color: #ff8906;
+            box-shadow: 0 0 10px rgba(255, 137, 6, 0.5);
+        }
+        
+        .btn {
+            background: linear-gradient(135deg, #ff8906 0%, #e53170 100%);
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(229, 49, 112, 0.3);
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(229, 49, 112, 0.4);
+        }
+        
+        .torch-effect {
+            position: absolute;
+            width: 150px;
+            height: 150px;
+            background: radial-gradient(circle, rgba(255, 137, 6, 0.4) 0%, transparent 70%);
+            border-radius: 50%;
+            filter: blur(20px);
+            z-index: -1;
+            animation: flicker 5s infinite alternate;
+        }
+        
+        @keyframes flicker {
+            0%, 100% { opacity: 0.7; transform: scale(1); }
+            25% { opacity: 0.5; transform: scale(0.95); }
+            50% { opacity: 0.8; transform: scale(1.05); }
+            75% { opacity: 0.6; transform: scale(0.98); }
+        }
+        
+        .maze-cell {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-size: cover;
+            background-position: center;
+            border: 1px solid rgba(0, 0, 0, 0.2);
+            position: relative;
+        }
+        
+        .wall {
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 40 40"><rect width="40" height="40" fill="%232d3748"/><path d="M0,0 L40,40 M0,40 L40,0" stroke="%231a202c" stroke-width="1"/></svg>');
+        }
+        
+        .path {
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 40 40"><rect width="40" height="40" fill="%234a5568"/><circle cx="20" cy="20" r="1" fill="%23374151"/><circle cx="10" cy="10" r="1" fill="%23374151"/><circle cx="30" cy="30" r="1" fill="%23374151"/></svg>');
+        }
+        
+        .start {
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 40 40"><rect width="40" height="40" fill="%2348bb78"/><path d="M20,10 L25,25 L10,20 L30,20 L15,25 Z" fill="%2338a169"/></svg>');
+        }
+        
+        .exit {
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 40 40"><rect width="40" height="40" fill="%23f56565"/><path d="M10,10 L30,30 M30,10 L10,30" stroke="%23e53e3e" stroke-width="3"/></svg>');
+        }
+        
+        .button-unused {
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 40 40"><rect width="40" height="40" fill="%23d69e2e"/><circle cx="20" cy="20" r="10" fill="%23b7791f"/><circle cx="20" cy="20" r="6" fill="%23d69e2e"/></svg>');
+        }
+        
+        .button-used {
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 40 40"><rect width="40" height="40" fill="%23975a16"/><circle cx="20" cy="20" r="10" fill="%23744210"/><circle cx="20" cy="20" r="6" fill="%23975a16"/></svg>');
+        }
+        
+        .door-closed {
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 40 40"><rect width="40" height="40" fill="%239f7aea"/><rect x="12" y="5" width="16" height="30" fill="%236b46c1"/><circle cx="25" cy="20" r="3" fill="%239f7aea"/></svg>');
+        }
+        
+        .door-open {
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 40 40"><rect width="40" height="40" fill="%236b46c1"/><rect x="12" y="5" width="16" height="30" fill="%234c2d95" transform="rotate(45, 20, 20)"/></svg>');
+        }
+        
+        .player {
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 40 40"><rect width="40" height="40" fill="%234299e1"/><circle cx="20" cy="15" r="8" fill="%232b6cb0"/><path d="M15,25 L25,25 L20,35 Z" fill="%232b6cb0"/></svg>');
+        }
+        
+        .maze-grid {
+            display: grid;
+            gap: 1px;
+            margin: 20px auto;
+            justify-content: center;
+            border: 3px solid #4a5568;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+        }
+        
+        .result-matrix {
+            background-color: rgba(0, 0, 0, 0.5);
+            padding: 15px;
+            border-radius: 8px;
+            font-family: monospace;
+            white-space: pre-wrap;
+            word-break: break-all;
+            max-width: 100%;
+            overflow-x: auto;
+        }
+        
+        .cell-content {
+            position: absolute;
+            font-size: 12px;
+            bottom: 2px;
+            right: 2px;
+            background: rgba(0, 0, 0, 0.5);
+            color: white;
+            padding: 0 3px;
+            border-radius: 3px;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            margin-right: 15px;
+        }
+        
+        .legend-icon {
+            width: 20px;
+            height: 20px;
+            margin-right: 5px;
+            background-size: cover;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex items-center justify-center p-4">
+    <!-- Torch effects -->
+    <div class="torch-effect" style="top: 10%; left: 10%;"></div>
+    <div class="torch-effect" style="bottom: 15%; right: 15%; animation-delay: 1s;"></div>
+    
+    <!-- Main Container -->
+    <div class="container rounded-xl overflow-hidden w-full max-w-4xl relative z-10 p-8">
+        <div class="text-center mb-8">
+            <i class="fas fa-dungeon text-5xl text-amber-500 mb-2"></i>
+            <h1 class="text-3xl font-bold bg-gradient-to-r from-amber-500 to-red-500 bg-clip-text text-transparent">
+                Générateur de Labyrinthe Mystique
+            </h1>
+            <p class="text-gray-400 mt-2">Créez des donjons pour vos aventuriers</p>
+        </div>
+        
+        <!-- Configuration -->
+        <div class="mb-8 p-6 bg-gray-800 rounded-lg">
+            <h2 class="text-xl font-bold text-amber-400 mb-4 flex items-center">
+                <i class="fas fa-cog mr-2"></i> Configuration du Labyrinthe
+            </h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <label class="block text-gray-400 mb-2">Taille du labyrinthe (5-25)</label>
+                    <input type="number" id="maze-size" min="5" max="25" value="12" class="form-input w-full px-4 py-3 rounded-lg text-white">
+                </div>
+                
+                <div>
+                    <label class="block text-gray-400 mb-2">Difficulté</label>
+                    <select id="difficulty" class="form-input w-full px-4 py-3 rounded-lg text-white">
+                        <option value="easy">Facile</option>
+                        <option value="medium" selected>Moyen</option>
+                        <option value="hard">Difficile</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div class="flex items-center">
+                    <input type="checkbox" id="include-buttons" class="rounded bg-gray-700 border-gray-600 text-amber-500 focus:ring-amber-500" checked>
+                    <label for="include-buttons" class="ml-2 text-gray-400">Inclure des boutons</label>
+                </div>
+                
+                <div class="flex items-center">
+                    <input type="checkbox" id="include-doors" class="rounded bg-gray-700 border-gray-600 text-amber-500 focus:ring-amber-500" checked>
+                    <label for="include-doors" class="ml-2 text-gray-400">Inclure des portes</label>
+                </div>
+                
+                <div class="flex items-center">
+                    <input type="checkbox" id="include-player" class="rounded bg-gray-700 border-gray-600 text-amber-500 focus:ring-amber-500" checked>
+                    <label for="include-player" class="ml-2 text-gray-400">Inclure le joueur</label>
+                </div>
+            </div>
+            
+            <button id="generate-btn" class="btn w-full mt-6 py-3 rounded-lg text-white font-bold">
+                <i class="fas fa-hat-wizard mr-2"></i> Générer le Labyrinthe
+            </button>
+        </div>
+        
+        <!-- Maze Display -->
+        <div id="maze-display" class="hidden mb-8 p-6 bg-gray-800 rounded-lg">
+            <h2 class="text-xl font-bold text-amber-400 mb-4 flex items-center">
+                <i class="fas fa-chess-board mr-2"></i> Visualisation du Labyrinthe
+            </h2>
+            
+            <div id="maze-container" class="maze-grid"></div>
+            
+            <div class="mt-6 flex flex-wrap gap-4">
+                <div class="legend-item">
+                    <div class="legend-icon wall"></div>
+                    <span class="text-gray-400 text-sm">Mur (0)</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-icon path"></div>
+                    <span class="text-gray-400 text-sm">Chemin (1)</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-icon start"></div>
+                    <span class="text-gray-400 text-sm">Départ (2)</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-icon exit"></div>
+                    <span class="text-gray-400 text-sm">Sortie (3)</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-icon button-unused"></div>
+                    <span class="text-gray-400 text-sm">Bouton (4)</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-icon door-closed"></div>
+                    <span class="text-gray-400 text-sm">Porte (6)</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-icon player"></div>
+                    <span class="text-gray-400 text-sm">Joueur (9)</span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Result Matrix -->
+        <div id="result-container" class="hidden">
+            <h2 class="text-xl font-bold text-amber-400 mb-4 flex items-center">
+                <i class="fas fa-scroll mr-2"></i> Matrice du Labyrinthe
+            </h2>
+            
+            <div class="result-matrix text-gray-300" id="matrix-result"></div>
+            
+            <button id="copy-btn" class="btn w-full mt-6 py-3 rounded-lg text-white font-bold">
+                <i class="fas fa-copy mr-2"></i> Copier la Matrice
+            </button>
+        </div>
+    </div>
+    
+    <!-- Footer -->
+    <footer class="absolute bottom-4 left-0 right-0 text-center text-gray-500 text-sm">
+        © 2023 Mystical Dungeons - Tous droits réservés
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const generateBtn = document.getElementById('generate-btn');
+            const mazeDisplay = document.getElementById('maze-display');
+            const resultContainer = document.getElementById('result-container');
+            const mazeContainer = document.getElementById('maze-container');
+            const matrixResult = document.getElementById('matrix-result');
+            const copyBtn = document.getElementById('copy-btn');
+            
+            generateBtn.addEventListener('click', generateMaze);
+            copyBtn.addEventListener('click', copyMatrix);
+            
+            function generateMaze() {
+                const size = parseInt(document.getElementById('maze-size').value);
+                const difficulty = document.getElementById('difficulty').value;
+                const includeButtons = document.getElementById('include-buttons').checked;
+                const includeDoors = document.getElementById('include-doors').checked;
+                const includePlayer = document.getElementById('include-player').checked;
+                
+                // Validate size
+                if (size < 5 || size > 25) {
+                    alert('La taille doit être entre 5 et 25');
+                    return;
+                }
+                
+                // Generate empty maze filled with walls (0)
+                let maze = Array(size).fill().map(() => Array(size).fill(0));
+                
+                // Generate paths (1) using recursive backtracking
+                generatePaths(maze, size, difficulty);
+                
+                // Add start (2) and exit (3)
+                addStartAndExit(maze, size);
+                
+                // Add buttons (4) and doors (6) if enabled
+                if (includeButtons && includeDoors) {
+                    addButtonsAndDoorsWithPathValidation(maze, size, difficulty);
+                } else if (includeButtons) {
+                    addButtons(maze, size, difficulty);
+                } else if (includeDoors) {
+                    addDoors(maze, size, difficulty);
+                }
+                
+                // Add player (9) if enabled
+                if (includePlayer) {
+                    addPlayer(maze, size);
+                }
+                
+                // Display the maze
+                displayMaze(maze);
+                
+                // Generate the matrix string
+                const matrixString = maze.map(row => row.join('')).join(';');
+                matrixResult.textContent = matrixString;
+                
+                // Show results
+                mazeDisplay.classList.remove('hidden');
+                resultContainer.classList.remove('hidden');
+            }
+            
+            function generatePaths(maze, size, difficulty) {
+                // Start from a random cell
+                const startX = Math.floor(Math.random() * (size - 2)) + 1;
+                const startY = Math.floor(Math.random() * (size - 2)) + 1;
+                
+                // Stack for backtracking
+                const stack = [[startX, startY]];
+                maze[startY][startX] = 1;
+                
+                // Determine path density based on difficulty
+                let pathDensity;
+                switch(difficulty) {
+                    case 'easy': pathDensity = 0.7; break;
+                    case 'hard': pathDensity = 0.4; break;
+                    default: pathDensity = 0.55; // medium
+                }
+                
+                const targetPaths = Math.floor(size * size * pathDensity);
+                let pathCount = 1; // already have the starting cell
+                
+                // Directions: up, right, down, left
+                const directions = [[0, -1], [1, 0], [0, 1], [-1, 0]];
+                
+                while (stack.length > 0 && pathCount < targetPaths) {
+                    const [x, y] = stack[stack.length - 1];
+                    
+                    // Find all unvisited neighbors
+                    const neighbors = [];
+                    for (const [dx, dy] of directions) {
+                        const nx = x + dx * 2;
+                        const ny = y + dy * 2;
+                        
+                        if (nx > 0 && nx < size - 1 && ny > 0 && ny < size - 1 && maze[ny][nx] === 0) {
+                            neighbors.push([nx, ny, dx, dy]);
+                        }
+                    }
+                    
+                    if (neighbors.length > 0) {
+                        // Choose a random neighbor
+                        const [nx, ny, dx, dy] = neighbors[Math.floor(Math.random() * neighbors.length)];
+                        
+                        // Carve path
+                        maze[y + dy][x + dx] = 1;
+                        maze[ny][nx] = 1;
+                        pathCount += 2;
+                        
+                        stack.push([nx, ny]);
+                    } else {
+                        // Backtrack
+                        stack.pop();
+                    }
+                }
+                
+                // Add some random paths to create loops
+                if (difficulty !== 'easy') {
+                    const extraPaths = Math.floor(size * (difficulty === 'hard' ? 0.3 : 0.15));
+                    for (let i = 0; i < extraPaths; i++) {
+                        const x = Math.floor(Math.random() * (size - 2)) + 1;
+                        const y = Math.floor(Math.random() * (size - 2)) + 1;
+                        
+                        if (maze[y][x] === 0) {
+                            const adjacentPaths = countAdjacentPaths(x, y, maze, size);
+                            if (adjacentPaths >= 2) {
+                                maze[y][x] = 1;
+                                pathCount++;
+                            }
+                        }
+                    }
+                }
+            }
+            
+            function countAdjacentPaths(x, y, maze, size) {
+                let count = 0;
+                const directions = [[0, 1], [1, 0], [0, -1], [-1, 0]];
+                
+                for (const [dx, dy] of directions) {
+                    const nx = x + dx;
+                    const ny = y + dy;
+                    
+                    if (nx >= 0 && nx < size && ny >= 0 && ny < size && maze[ny][nx] === 1) {
+                        count++;
+                    }
+                }
+                
+                return count;
+            }
+            
+            function addStartAndExit(maze, size) {
+                // Find all path cells on the edges
+                let edgePathCells = [];
+                for (let y = 0; y < size; y++) {
+                    for (let x = 0; x < size; x++) {
+                        if (maze[y][x] === 1 && (x === 0 || x === size - 1 || y === 0 || y === size - 1)) {
+                            edgePathCells.push([x, y]);
+                        }
+                    }
+                }
+                
+                if (edgePathCells.length < 2) {
+                    // If not enough edge paths, use any path cells
+                    for (let y = 0; y < size; y++) {
+                        for (let x = 0; x < size; x++) {
+                            if (maze[y][x] === 1) {
+                                edgePathCells.push([x, y]);
+                            }
+                        }
+                    }
+                }
+                
+                if (edgePathCells.length < 2) return;
+                
+                // Sort by distance from center to find more extreme positions
+                const center = size / 2;
+                edgePathCells.sort((a, b) => {
+                    const distA = Math.sqrt(Math.pow(a[0] - center, 2) + Math.pow(a[1] - center, 2));
+                    const distB = Math.sqrt(Math.pow(b[0] - center, 2) + Math.pow(b[1] - center, 2));
+                    return distB - distA;
+                });
+                
+                // Add start (2) and exit (3)
+                maze[edgePathCells[0][1]][edgePathCells[0][0]] = 2;
+                maze[edgePathCells[1][1]][edgePathCells[1][0]] = 3;
+            }
+            
+            function addButtonsAndDoorsWithPathValidation(maze, size, difficulty) {
+                // Determine number of button-door pairs based on difficulty
+                let count;
+                switch(difficulty) {
+                    case 'easy': count = 1; break;
+                    case 'hard': count = 3; break;
+                    default: count = 2; // medium
+                }
+                
+                // Find all path cells that aren't start or exit
+                let pathCells = [];
+                for (let y = 0; y < size; y++) {
+                    for (let x = 0; x < size; x++) {
+                        if (maze[y][x] === 1) {
+                            pathCells.push([x, y]);
+                        }
+                    }
+                }
+                
+                if (pathCells.length < count * 2) return;
+                
+                // Shuffle the path cells
+                pathCells.sort(() => Math.random() - 0.5);
+                
+                // Find start and exit positions
+                let startPos = null, exitPos = null;
+                for (let y = 0; y < size; y++) {
+                    for (let x = 0; x < size; x++) {
+                        if (maze[y][x] === 2) startPos = [x, y];
+                        if (maze[y][x] === 3) exitPos = [x, y];
+                    }
+                }
+                
+                if (!startPos || !exitPos) return;
+                
+                // Add buttons and doors with path validation
+                for (let i = 0; i < count; i++) {
+                    if (pathCells.length < 2) break;
+                    
+                    // Try to find a valid button-door pair
+                    let validPairFound = false;
+                    let attempts = 0;
+                    const maxAttempts = 10;
+                    
+                    while (!validPairFound && attempts < maxAttempts && pathCells.length >= 2) {
+                        attempts++;
+                        
+                        // Pick random button and door positions
+                        const buttonIndex = Math.floor(Math.random() * pathCells.length);
+                        const [bx, by] = pathCells[buttonIndex];
+                        
+                        const doorIndex = Math.floor(Math.random() * pathCells.length);
+                        const [dx, dy] = pathCells[doorIndex];
+                        
+                        // Temporarily place button and door
+                        maze[by][bx] = 4;
+                        maze[dy][dx] = 6;
+                        
+                        // Check if there's a path from start to button and from button to door
+                        const pathToButton = findPath(maze, size, startPos, [bx, by]);
+                        const pathFromButtonToDoor = findPath(maze, size, [bx, by], [dx, dy]);
+                        const pathFromDoorToExit = findPath(maze, size, [dx, dy], exitPos);
+                        
+                        if (pathToButton && pathFromButtonToDoor && pathFromDoorToExit) {
+                            validPairFound = true;
+                            // Remove these cells from available path cells
+                            pathCells.splice(Math.max(buttonIndex, doorIndex), 1);
+                            pathCells.splice(Math.min(buttonIndex, doorIndex), 1);
+                        } else {
+                            // Revert changes
+                            maze[by][bx] = 1;
+                            maze[dy][dx] = 1;
+                        }
+                    }
+                    
+                    if (!validPairFound && pathCells.length >= 2) {
+                        // Fallback - just place them randomly
+                        const [bx, by] = pathCells.pop();
+                        const [dx, dy] = pathCells.pop();
+                        maze[by][bx] = 4;
+                        maze[dy][dx] = 6;
+                    }
+                }
+            }
+            
+            function findPath(maze, size, start, end) {
+                // Simple BFS pathfinding
+                const visited = Array(size).fill().map(() => Array(size).fill(false));
+                const queue = [[start[0], start[1]]];
+                visited[start[1]][start[0]] = true;
+                
+                const directions = [[0, 1], [1, 0], [0, -1], [-1, 0]];
+                
+                while (queue.length > 0) {
+                    const [x, y] = queue.shift();
+                    
+                    // Check if we've reached the end
+                    if (x === end[0] && y === end[1]) {
+                        return true;
+                    }
+                    
+                    // Explore neighbors
+                    for (const [dx, dy] of directions) {
+                        const nx = x + dx;
+                        const ny = y + dy;
+                        
+                        if (nx >= 0 && nx < size && ny >= 0 && ny < size && 
+                            !visited[ny][nx] && 
+                            (maze[ny][nx] === 1 || maze[ny][nx] === 2 || maze[ny][nx] === 3 || 
+                             maze[ny][nx] === 4 || maze[ny][nx] === 6 || maze[ny][nx] === 7)) {
+                            visited[ny][nx] = true;
+                            queue.push([nx, ny]);
+                        }
+                    }
+                }
+                
+                return false;
+            }
+            
+            function addButtons(maze, size, difficulty) {
+                let count;
+                switch(difficulty) {
+                    case 'easy': count = 2; break;
+                    case 'hard': count = 6; break;
+                    default: count = 4; // medium
+                }
+                
+                let pathCells = [];
+                for (let y = 0; y < size; y++) {
+                    for (let x = 0; x < size; x++) {
+                        if (maze[y][x] === 1) {
+                            pathCells.push([x, y]);
+                        }
+                    }
+                }
+                
+                if (pathCells.length < count) return;
+                
+                pathCells.sort(() => Math.random() - 0.5);
+                
+                for (let i = 0; i < count; i++) {
+                    const [bx, by] = pathCells.pop();
+                    maze[by][bx] = 4;
+                }
+            }
+            
+            function addDoors(maze, size, difficulty) {
+                let count;
+                switch(difficulty) {
+                    case 'easy': count = 2; break;
+                    case 'hard': count = 6; break;
+                    default: count = 4; // medium
+                }
+                
+                let pathCells = [];
+                for (let y = 0; y < size; y++) {
+                    for (let x = 0; x < size; x++) {
+                        if (maze[y][x] === 1) {
+                            pathCells.push([x, y]);
+                        }
+                    }
+                }
+                
+                if (pathCells.length < count) return;
+                
+                pathCells.sort(() => Math.random() - 0.5);
+                
+                for (let i = 0; i < count; i++) {
+                    const [dx, dy] = pathCells.pop();
+                    maze[dy][dx] = 6;
+                }
+            }
+            
+            function addPlayer(maze, size) {
+                // Find the start position
+                for (let y = 0; y < size; y++) {
+                    for (let x = 0; x < size; x++) {
+                        if (maze[y][x] === 2) {
+                            // Place player near the start (1 cell away)
+                            const directions = [[0, 1], [1, 0], [0, -1], [-1, 0]];
+                            for (const [dx, dy] of directions) {
+                                const nx = x + dx;
+                                const ny = y + dy;
+                                if (nx >= 0 && nx < size && ny >= 0 && ny < size && maze[ny][nx] === 1) {
+                                    maze[ny][nx] = 9;
+                                    return;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            
+            function displayMaze(maze) {
+                mazeContainer.innerHTML = '';
+                const size = maze.length;
+                
+                // Set grid template
+                mazeContainer.style.gridTemplateColumns = `repeat(${size}, 40px)`;
+                
+                // Create cells
+                for (let y = 0; y < size; y++) {
+                    for (let x = 0; x < size; x++) {
+                        const cell = document.createElement('div');
+                        cell.className = 'maze-cell';
+                        
+                        // Set class based on cell value
+                        switch(maze[y][x]) {
+                            case 0: cell.classList.add('wall'); break;
+                            case 1: cell.classList.add('path'); break;
+                            case 2: cell.classList.add('start'); break;
+                            case 3: cell.classList.add('exit'); break;
+                            case 4: cell.classList.add('button-unused'); break;
+                            case 5: cell.classList.add('button-used'); break;
+                            case 6: cell.classList.add('door-closed'); break;
+                            case 7: cell.classList.add('door-open'); break;
+                            case 9: cell.classList.add('player'); break;
+                        }
+                        
+                        // Add value as text (optional)
+                        const content = document.createElement('div');
+                        content.className = 'cell-content';
+                        content.textContent = maze[y][x];
+                        cell.appendChild(content);
+                        
+                        mazeContainer.appendChild(cell);
+                    }
+                }
+            }
+            
+            function copyMatrix() {
+                const text = matrixResult.textContent;
+                navigator.clipboard.writeText(text).then(() => {
+                    // Change button text temporarily
+                    copyBtn.innerHTML = '<i class="fas fa-check mr-2"></i> Copié!';
+                    setTimeout(() => {
+                        copyBtn.innerHTML = '<i class="fas fa-copy mr-2"></i> Copier la Matrice';
+                    }, 2000);
+                });
+            }
+        });
+    </script>
+</body>
+</html>

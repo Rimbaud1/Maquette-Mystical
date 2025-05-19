@@ -1,0 +1,647 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mystical Dungeons - Map Creator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=MedievalSharp&display=swap');
+        
+        body {
+            font-family: 'MedievalSharp', cursive;
+            background-color: #0f0e17;
+            color: #e8e8e8;
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(255, 137, 6, 0.08) 0%, transparent 20%),
+                radial-gradient(circle at 90% 80%, rgba(229, 49, 112, 0.08) 0%, transparent 20%);
+        }
+        
+        .main-container {
+            background: rgba(26, 26, 46, 0.85);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 137, 6, 0.25);
+            box-shadow: 0 0 40px rgba(255, 137, 6, 0.15);
+        }
+        
+        .form-input {
+            background: rgba(58, 58, 58, 0.6);
+            border: 1px solid rgba(255, 137, 6, 0.4);
+            transition: all 0.3s ease-out;
+        }
+        
+        .form-input:focus {
+            border-color: #ff8906;
+            box-shadow: 0 0 12px rgba(255, 137, 6, 0.6);
+            background: rgba(58, 58, 58, 0.8);
+        }
+        
+        .action-btn {
+            background: linear-gradient(135deg, #ff8906 0%, #e53170 100%);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 4px 18px rgba(229, 49, 112, 0.35);
+        }
+        
+        .action-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 24px rgba(229, 49, 112, 0.45);
+        }
+        
+        .torch-effect {
+            position: absolute;
+            width: 180px;
+            height: 180px;
+            background: radial-gradient(circle, rgba(255, 137, 6, 0.45) 0%, transparent 70%);
+            border-radius: 50%;
+            filter: blur(24px);
+            z-index: -1;
+            animation: flicker 5s infinite alternate;
+        }
+        
+        @keyframes flicker {
+            0%, 100% { opacity: 0.7; transform: scale(1); }
+            25% { opacity: 0.5; transform: scale(0.95); }
+            50% { opacity: 0.8; transform: scale(1.05); }
+            75% { opacity: 0.6; transform: scale(0.98); }
+        }
+
+        .grid-cell {
+            width: 40px;
+            height: 40px;
+            border: 1px solid rgba(255, 137, 6, 0.2);
+            transition: all 0.2s ease;
+            position: relative;
+            cursor: pointer;
+        }
+
+        .grid-cell:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 10px rgba(255, 137, 6, 0.5);
+        }
+
+        /* Improved textures */
+        .wall {
+            background-color: #3a3a3a;
+            background-image: 
+                linear-gradient(45deg, #2a2a2a 25%, transparent 25%),
+                linear-gradient(-45deg, #2a2a2a 25%, transparent 25%),
+                linear-gradient(45deg, transparent 75%, #2a2a2a 75%),
+                linear-gradient(-45deg, transparent 75%, #2a2a2a 75%);
+            background-size: 20px 20px;
+            background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
+            border: 1px solid #555;
+        }
+
+        .path {
+            background-color: #1a1a2e;
+            background-image: 
+                radial-gradient(circle at 10px 10px, rgba(255, 137, 6, 0.1) 1px, transparent 2px),
+                radial-gradient(circle at 30px 30px, rgba(255, 137, 6, 0.1) 1px, transparent 2px);
+            background-size: 40px 40px;
+        }
+
+        .door {
+            background-color: #5c3a21;
+            background-image: 
+                linear-gradient(to right, 
+                    #8b5a2b 0%, 
+                    #a67c52 20%, 
+                    #8b5a2b 40%, 
+                    #5c3a21 60%, 
+                    #8b5a2b 80%, 
+                    #a67c52 100%);
+            border: 2px solid #ff8906;
+            box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.5);
+        }
+
+        .door.open {
+            background-color: #1a1a2e;
+            background-image: 
+                linear-gradient(45deg, 
+                    rgba(139, 90, 43, 0.3) 25%, 
+                    transparent 25%, 
+                    transparent 75%, 
+                    rgba(139, 90, 43, 0.3) 75%),
+                linear-gradient(45deg, 
+                    rgba(139, 90, 43, 0.3) 25%, 
+                    transparent 25%, 
+                    transparent 75%, 
+                    rgba(139, 90, 43, 0.3) 75%);
+            background-size: 20px 20px;
+            background-position: 0 0, 10px 10px;
+        }
+
+        .button {
+            background-color: #e53170;
+            background-image: 
+                radial-gradient(circle at center, 
+                    #ff8906 0%, 
+                    #e53170 30%, 
+                    #ff8906 60%);
+            border: 2px solid #ff8906;
+            box-shadow: 0 0 10px rgba(229, 49, 112, 0.7);
+        }
+
+        .button.active {
+            background-color: #ff8906;
+            background-image: 
+                radial-gradient(circle at center, 
+                    #e53170 0%, 
+                    #ff8906 30%, 
+                    #e53170 60%);
+        }
+
+        .start {
+            background-color: #1a1a2e;
+            background-image: 
+                radial-gradient(circle at center, 
+                    rgba(0, 255, 0, 0.3) 0%, 
+                    transparent 70%);
+            border: 2px solid #00ff00;
+            animation: pulse-start 2s infinite;
+        }
+
+        @keyframes pulse-start {
+            0%, 100% { box-shadow: 0 0 5px rgba(0, 255, 0, 0.5); }
+            50% { box-shadow: 0 0 20px rgba(0, 255, 0, 0.8); }
+        }
+
+        .exit {
+            background-color: #1a1a2e;
+            background-image: 
+                radial-gradient(circle at center, 
+                    rgba(255, 0, 0, 0.3) 0%, 
+                    transparent 70%);
+            border: 2px solid #ff0000;
+            animation: pulse-exit 2s infinite;
+        }
+
+        @keyframes pulse-exit {
+            0%, 100% { box-shadow: 0 0 5px rgba(255, 0, 0, 0.5); }
+            50% { box-shadow: 0 0 20px rgba(255, 0, 0, 0.8); }
+        }
+
+        .tool-btn {
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 137, 6, 0.3);
+        }
+
+        .tool-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(255, 137, 6, 0.3);
+        }
+
+        .tool-btn.active {
+            background: linear-gradient(135deg, #ff8906 0%, #e53170 100%);
+            box-shadow: 0 0 12px rgba(255, 137, 6, 0.6);
+        }
+
+        @media (max-width: 768px) {
+            .grid-cell {
+                width: 30px;
+                height: 30px;
+            }
+        }
+    </style>
+</head>
+<body class="min-h-screen p-4">
+    <!-- Torch effects -->
+    <div class="torch-effect" style="top: 10%; left: 10%;"></div>
+    <div class="torch-effect" style="bottom: 15%; right: 15%; animation-delay: 1s;"></div>
+    
+    <!-- Main Container -->
+    <div class="main-container rounded-xl overflow-hidden w-full max-w-6xl mx-auto relative z-10 p-6">
+        <div class="text-center mb-6">
+            <i class="fas fa-dungeon text-5xl text-amber-500 mb-2"></i>
+            <h1 class="text-3xl font-bold bg-gradient-to-r from-amber-500 to-red-500 bg-clip-text text-transparent">
+                Mystical Dungeon Creator
+            </h1>
+            <p class="text-gray-400 mt-2">Forge your own labyrinth</p>
+        </div>
+
+        <!-- Controls Section -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <!-- Map Settings -->
+            <div class="bg-gray-800 p-4 rounded-lg border border-gray-700">
+                <h2 class="text-xl font-bold text-amber-400 mb-4 flex items-center">
+                    <i class="fas fa-cog mr-2"></i> Map Settings
+                </h2>
+                
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-gray-400 mb-2">Map Name</label>
+                        <input type="text" id="map-name" class="form-input w-full px-4 py-2 rounded-lg text-white placeholder-gray-500" placeholder="Name your dungeon">
+                    </div>
+                    
+                    <div>
+                        <label class="block text-gray-400 mb-2">Grid Size</label>
+                        <select id="grid-size" class="form-input w-full px-4 py-2 rounded-lg text-white">
+                            <option value="10">10x10 (Small)</option>
+                            <option value="15" selected>15x15 (Medium)</option>
+                            <option value="20">20x20 (Large)</option>
+                        </select>
+                    </div>
+                    
+                    <button id="generate-grid" class="action-btn w-full py-2 rounded-lg text-white font-bold">
+                        <i class="fas fa-magic mr-2"></i> Generate Grid
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Tools Section -->
+            <div class="bg-gray-800 p-4 rounded-lg border border-gray-700">
+                <h2 class="text-xl font-bold text-purple-400 mb-4 flex items-center">
+                    <i class="fas fa-tools mr-2"></i> Builder Tools
+                </h2>
+                
+                <div class="grid grid-cols-2 gap-3">
+                    <button data-tool="wall" class="tool-btn active py-2 rounded-lg text-white bg-gray-700">
+                        <i class="fas fa-wall mr-1"></i> Wall
+                    </button>
+                    <button data-tool="path" class="tool-btn py-2 rounded-lg text-white bg-gray-700">
+                        <i class="fas fa-road mr-1"></i> Path
+                    </button>
+                    <button data-tool="start" class="tool-btn py-2 rounded-lg text-white bg-gray-700">
+                        <i class="fas fa-play mr-1"></i> Start
+                    </button>
+                    <button data-tool="exit" class="tool-btn py-2 rounded-lg text-white bg-gray-700">
+                        <i class="fas fa-flag-checkered mr-1"></i> Exit
+                    </button>
+                    <button data-tool="door" class="tool-btn py-2 rounded-lg text-white bg-gray-700">
+                        <i class="fas fa-door-closed mr-1"></i> Door
+                    </button>
+                    <button data-tool="button" class="tool-btn py-2 rounded-lg text-white bg-gray-700">
+                        <i class="fas fa-toggle-on mr-1"></i> Button
+                    </button>
+                    <button data-tool="erase" class="tool-btn py-2 rounded-lg text-white bg-gray-700 col-span-2">
+                        <i class="fas fa-eraser mr-1"></i> Eraser
+                    </button>
+                </div>
+                
+                <div class="mt-4 pt-4 border-t border-gray-700">
+                    <button id="clear-grid" class="w-full py-2 rounded-lg text-white bg-red-900 hover:bg-red-800 transition">
+                        <i class="fas fa-trash-alt mr-2"></i> Clear All
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Play Section -->
+            <div class="bg-gray-800 p-4 rounded-lg border border-gray-700">
+                <h2 class="text-xl font-bold text-green-400 mb-4 flex items-center">
+                    <i class="fas fa-play mr-2"></i> Ready to Play
+                </h2>
+                
+                <div class="space-y-4">
+                    <button id="create-play" class="action-btn w-full py-2 rounded-lg text-white font-bold" style="background: linear-gradient(135deg, #10b981 0%, #3b82f6 100%);">
+                        <i class="fas fa-gamepad mr-2"></i> Create & Play
+                    </button>
+                    
+                    <div class="text-gray-400 text-sm">
+                        <p>Make sure you have:</p>
+                        <ul class="list-disc pl-5 mt-2">
+                            <li>At least one Start point</li>
+                            <li>At least one Exit</li>
+                            <li>A valid path between them</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Grid Container -->
+        <div class="mb-8">
+            <div id="grid-container" class="flex justify-center">
+                <div id="grid" class="grid grid-cols-15 gap-0 border-2 border-amber-600 bg-gray-900"></div>
+            </div>
+        </div>
+        
+        <!-- Instructions -->
+        <div class="bg-gray-800 p-4 rounded-lg border border-gray-700">
+            <h2 class="text-xl font-bold text-blue-400 mb-2 flex items-center">
+                <i class="fas fa-scroll mr-2"></i> Dungeon Master's Guide
+            </h2>
+            <ul class="text-gray-300 list-disc pl-5 space-y-1">
+                <li>Click on grid cells to place your selected element</li>
+                <li>Place exactly one Start point (green) and one Exit (red)</li>
+                <li>Buttons will toggle all doors between open/closed states</li>
+                <li>Doors block passage when closed</li>
+                <li>Click "Create & Play" when your dungeon is ready</li>
+            </ul>
+        </div>
+    </div>
+    
+    <!-- Footer -->
+    <footer class="text-center text-gray-500 text-sm mt-8">
+        © 2023 Mystical Dungeons - Forge your own labyrinth
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Game state
+            const state = {
+                gridSize: 15,
+                selectedTool: 'wall',
+                grid: [],
+                doors: [],
+                buttons: [],
+                startPosition: null,
+                exitPosition: null
+            };
+            
+            // DOM elements
+            const gridElement = document.getElementById('grid');
+            const gridSizeSelect = document.getElementById('grid-size');
+            const generateGridBtn = document.getElementById('generate-grid');
+            const toolButtons = document.querySelectorAll('[data-tool]');
+            const clearGridBtn = document.getElementById('clear-grid');
+            const createPlayBtn = document.getElementById('create-play');
+            const mapNameInput = document.getElementById('map-name');
+            
+            // Initialize
+            initializeGrid();
+            
+            // Event listeners
+            gridSizeSelect.addEventListener('change', function() {
+                state.gridSize = parseInt(this.value);
+            });
+            
+            generateGridBtn.addEventListener('click', initializeGrid);
+            
+            toolButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    toolButtons.forEach(btn => btn.classList.remove('active'));
+                    this.classList.add('active');
+                    state.selectedTool = this.dataset.tool;
+                });
+            });
+            
+            clearGridBtn.addEventListener('click', clearGrid);
+            
+            createPlayBtn.addEventListener('click', createAndPlay);
+            
+            // Grid functions
+            function initializeGrid() {
+                clearGrid();
+                
+                // Set grid template columns
+                gridElement.className = `grid gap-0 border-2 border-amber-600 bg-gray-900`;
+                gridElement.style.gridTemplateColumns = `repeat(${state.gridSize}, minmax(0, 1fr))`;
+                
+                // Create grid cells
+                for (let y = 0; y < state.gridSize; y++) {
+                    state.grid[y] = [];
+                    for (let x = 0; x < state.gridSize; x++) {
+                        state.grid[y][x] = 'path'; // Default to path
+                        
+                        const cell = document.createElement('div');
+                        cell.className = 'grid-cell path';
+                        cell.dataset.x = x;
+                        cell.dataset.y = y;
+                        
+                        cell.addEventListener('click', () => handleCellClick(x, y, cell));
+                        
+                        gridElement.appendChild(cell);
+                    }
+                }
+                
+                // Reset positions
+                state.startPosition = null;
+                state.exitPosition = null;
+                state.doors = [];
+                state.buttons = [];
+            }
+            
+            function clearGrid() {
+                gridElement.innerHTML = '';
+                state.grid = [];
+                state.doors = [];
+                state.buttons = [];
+                state.startPosition = null;
+                state.exitPosition = null;
+                mapNameInput.value = '';
+            }
+            
+            function handleCellClick(x, y, cell) {
+                if (state.selectedTool === 'erase') {
+                    // Remove any special elements from tracking
+                    if (state.startPosition && state.startPosition.x === x && state.startPosition.y === y) {
+                        state.startPosition = null;
+                    }
+                    if (state.exitPosition && state.exitPosition.x === x && state.exitPosition.y === y) {
+                        state.exitPosition = null;
+                    }
+                    state.doors = state.doors.filter(door => !(door.x === x && door.y === y));
+                    state.buttons = state.buttons.filter(button => !(button.x === x && button.y === y));
+                    
+                    state.grid[y][x] = 'path';
+                    cell.className = 'grid-cell path';
+                    return;
+                }
+                
+                // Handle the selected tool
+                switch (state.selectedTool) {
+                    case 'wall':
+                        // Can place wall anywhere except on start/exit
+                        if (state.grid[y][x] !== 'start' && state.grid[y][x] !== 'exit') {
+                            state.grid[y][x] = 'wall';
+                            cell.className = 'grid-cell wall';
+                        }
+                        break;
+                        
+                    case 'path':
+                        // Can place path anywhere except on start/exit
+                        if (state.grid[y][x] !== 'start' && state.grid[y][x] !== 'exit') {
+                            state.grid[y][x] = 'path';
+                            cell.className = 'grid-cell path';
+                        }
+                        break;
+                        
+                    case 'start':
+                        // Only one start position allowed
+                        if (state.startPosition) {
+                            // Remove previous start
+                            const prevCell = document.querySelector(`.grid-cell[data-x="${state.startPosition.x}"][data-y="${state.startPosition.y}"]`);
+                            if (prevCell) {
+                                prevCell.className = 'grid-cell path';
+                                state.grid[state.startPosition.y][state.startPosition.x] = 'path';
+                            }
+                        }
+                        
+                        // Can only place start on path
+                        if (state.grid[y][x] === 'path') {
+                            state.grid[y][x] = 'start';
+                            cell.className = 'grid-cell start';
+                            state.startPosition = { x, y };
+                        }
+                        break;
+                        
+                    case 'exit':
+                        // Only one exit position allowed
+                        if (state.exitPosition) {
+                            // Remove previous exit
+                            const prevCell = document.querySelector(`.grid-cell[data-x="${state.exitPosition.x}"][data-y="${state.exitPosition.y}"]`);
+                            if (prevCell) {
+                                prevCell.className = 'grid-cell path';
+                                state.grid[state.exitPosition.y][state.exitPosition.x] = 'path';
+                            }
+                        }
+                        
+                        // Can only place exit on path
+                        if (state.grid[y][x] === 'path') {
+                            state.grid[y][x] = 'exit';
+                            cell.className = 'grid-cell exit';
+                            state.exitPosition = { x, y };
+                        }
+                        break;
+                        
+                    case 'door':
+                        // Can only place door on path
+                        if (state.grid[y][x] === 'path') {
+                            state.grid[y][x] = 'door';
+                            cell.className = 'grid-cell door';
+                            state.doors.push({ x, y, open: false });
+                        }
+                        break;
+                        
+                    case 'button':
+                        // Can only place button on path
+                        if (state.grid[y][x] === 'path') {
+                            state.grid[y][x] = 'button';
+                            cell.className = 'grid-cell button';
+                            state.buttons.push({ x, y, active: false });
+                            
+                            // Add click handler for buttons
+                            cell.addEventListener('click', (e) => {
+                                if (state.selectedTool !== 'button') {
+                                    e.stopPropagation();
+                                    toggleDoors();
+                                }
+                            });
+                        }
+                        break;
+                }
+            }
+            
+            function toggleDoors() {
+                const hasClosedDoors = state.doors.some(door => !door.open);
+                
+                state.doors.forEach(door => {
+                    door.open = hasClosedDoors;
+                    
+                    // Find the cell element
+                    const cell = document.querySelector(`.grid-cell[data-x="${door.x}"][data-y="${door.y}"]`);
+                    if (cell) {
+                        if (door.open) {
+                            cell.classList.add('open');
+                        } else {
+                            cell.classList.remove('open');
+                        }
+                    }
+                });
+                
+                // Toggle buttons
+                state.buttons.forEach(button => {
+                    button.active = hasClosedDoors;
+                    
+                    const btnCell = document.querySelector(`.grid-cell[data-x="${button.x}"][data-y="${button.y}"]`);
+                    if (btnCell) {
+                        if (button.active) {
+                            btnCell.classList.add('active');
+                        } else {
+                            btnCell.classList.remove('active');
+                        }
+                    }
+                });
+            }
+            
+            function createAndPlay() {
+                // Validate the map
+                if (!state.startPosition) {
+                    alert("Your dungeon needs a Start point!");
+                    return;
+                }
+                
+                if (!state.exitPosition) {
+                    alert("Your dungeon needs an Exit!");
+                    return;
+                }
+                
+                // Simple path validation (just checks if exit is reachable when all doors are open)
+                // In a real game, you'd implement proper pathfinding here
+                const tempDoors = state.doors.map(door => ({...door}));
+                
+                // Open all doors for path validation
+                state.doors.forEach(door => door.open = true);
+                toggleDoors();
+                
+                // Check if exit is reachable from start (simplified)
+                const isReachable = checkPath(state.startPosition, state.exitPosition);
+                
+                // Restore door states
+                state.doors = tempDoors;
+                toggleDoors();
+                
+                if (!isReachable) {
+                    alert("There's no valid path from Start to Exit in your dungeon!");
+                    return;
+                }
+                
+                // If valid, proceed to play
+                const mapName = mapNameInput.value.trim() || "Unnamed Dungeon";
+                alert(`Dungeon "${mapName}" is ready to play! (This would launch the game in a real implementation)`);
+                
+                // Here you would normally:
+                // 1. Save the map data
+                // 2. Redirect to the game page with the map data
+                // For this demo, we'll just show a success message
+            }
+            
+            // Simplified path checking (BFS)
+            function checkPath(start, end) {
+                const visited = Array(state.gridSize).fill().map(() => Array(state.gridSize).fill(false));
+                const queue = [start];
+                visited[start.y][start.x] = true;
+                
+                const directions = [
+                    { x: 1, y: 0 },  // right
+                    { x: -1, y: 0 }, // left
+                    { x: 0, y: 1 },  // down
+                    { x: 0, y: -1 }  // up
+                ];
+                
+                while (queue.length > 0) {
+                    const current = queue.shift();
+                    
+                    // Check if we've reached the exit
+                    if (current.x === end.x && current.y === end.y) {
+                        return true;
+                    }
+                    
+                    // Check all directions
+                    for (const dir of directions) {
+                        const newX = current.x + dir.x;
+                        const newY = current.y + dir.y;
+                        
+                        // Check bounds
+                        if (newX < 0 || newX >= state.gridSize || newY < 0 || newY >= state.gridSize) {
+                            continue;
+                        }
+                        
+                        // Check if already visited or blocked
+                        if (!visited[newY][newX] && 
+                            (state.grid[newY][newX] === 'path' || 
+                             state.grid[newY][newX] === 'exit' ||
+                             (state.grid[newY][newX] === 'door' && state.doors.some(d => d.x === newX && d.y === newY && d.open)))) {
+                            visited[newY][newX] = true;
+                            queue.push({ x: newX, y: newY });
+                        }
+                    }
+                }
+                
+                return false;
+            }
+        });
+    </script>
+</body>
+</html>

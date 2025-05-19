@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Présentation Mystical Dungeons</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=MedievalSharp&display=swap');
+        
+        body {
+            font-family: 'MedievalSharp', cursive;
+            background-color: #0f0e17;
+            color: #e8e8e8;
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(255, 137, 6, 0.08) 0%, transparent 20%),
+                radial-gradient(circle at 90% 80%, rgba(229, 49, 112, 0.08) 0%, transparent 20%);
+        }
+        
+        .slide {
+            min-height: 100vh;
+            padding: 2rem;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+            pointer-events: none;
+        }
+        
+        .active-slide {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #ff8906 0%, #e53170 100%);
+            transition: all 0.3s;
+            box-shadow: 0 4px 18px rgba(229, 49, 112, 0.35);
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 24px rgba(229, 49, 112, 0.45);
+        }
+        
+        .text-gradient {
+            background: linear-gradient(135deg, #ff8906 0%, #e53170 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        
+        .team-card {
+            background: rgba(26, 26, 46, 0.85);
+            border: 1px solid rgba(255, 137, 6, 0.25);
+            transition: all 0.3s;
+        }
+        
+        .team-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(255, 137, 6, 0.2);
+        }
+        
+        .carousel-img {
+            display: none;
+            border: 2px solid rgba(255, 137, 6, 0.5);
+            box-shadow: 0 0 15px rgba(255, 137, 6, 0.3);
+        }
+        
+        .carousel-img.active {
+            display: block;
+        }
+        
+        .carousel-nav-btn {
+            background: rgba(15, 14, 23, 0.7);
+            border: 1px solid rgba(255, 137, 6, 0.3);
+        }
+        
+        .carousel-nav-btn:hover {
+            background: rgba(255, 137, 6, 0.2);
+        }
+        
+        .wireframe-container {
+            height: 70vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .wireframe-img {
+            max-height: 60vh;
+            width: auto;
+            border: 2px solid rgba(255, 137, 6, 0.5);
+            box-shadow: 0 0 20px rgba(255, 137, 6, 0.4);
+        }
+    </style>
+</head>
+<body class="relative overflow-x-hidden">
+    <!-- Navigation entre slides -->
+    <div class="fixed bottom-4 right-4 z-50 flex space-x-2">
+        <button onclick="prevSlide()" class="btn-primary w-10 h-10 rounded-full flex items-center justify-center">
+            <i class="fas fa-arrow-left"></i>
+        </button>
+        <button onclick="nextSlide()" class="btn-primary w-10 h-10 rounded-full flex items-center justify-center">
+            <i class="fas fa-arrow-right"></i>
+        </button>
+    </div>
+    
+    <!-- Indicateurs de slide -->
+    <div class="fixed bottom-4 left-1/2 transform -translate-x-1/2 z-50 flex space-x-2">
+        <button onclick="goToSlide(1)" class="w-3 h-3 rounded-full bg-gray-500 slide-indicator"></button>
+        <button onclick="goToSlide(2)" class="w-3 h-3 rounded-full bg-gray-500 slide-indicator"></button>
+        <button onclick="goToSlide(3)" class="w-3 h-3 rounded-full bg-gray-500 slide-indicator"></button>
+        <button onclick="goToSlide(4)" class="w-3 h-3 rounded-full bg-gray-500 slide-indicator"></button>
+        <button onclick="goToSlide(5)" class="w-3 h-3 rounded-full bg-gray-500 slide-indicator"></button>
+        <button onclick="goToSlide(6)" class="w-3 h-3 rounded-full bg-gray-500 slide-indicator"></button>
+        <button onclick="goToSlide(7)" class="w-3 h-3 rounded-full bg-gray-500 slide-indicator"></button>
+        <button onclick="goToSlide(8)" class="w-3 h-3 rounded-full bg-gray-500 slide-indicator"></button>
+        <button onclick="goToSlide(9)" class="w-3 h-3 rounded-full bg-gray-500 slide-indicator"></button>
+        <button onclick="goToSlide(10)" class="w-3 h-3 rounded-full bg-gray-500 slide-indicator"></button>
+    </div>
+
+    <!-- Slide 1 - Titre et sommaire -->
+    <div id="slide1" class="slide active-slide flex flex-col items-center justify-center">
+        <div class="text-center mb-12">
+            <div class="flex items-center justify-center mb-6">
+                <i class="fas fa-dungeon text-5xl text-amber-500 mr-4"></i>
+                <h1 class="text-5xl font-bold text-gradient">Mystical Dungeons</h1>
+            </div>
+            <p class="text-xl text-gray-300 mb-8">Présentation du projet</p>
+        </div>
+        
+        <div class="bg-gray-900/80 backdrop-blur-md rounded-lg p-8 max-w-2xl w-full">
+            <h2 class="text-2xl font-bold text-amber-400 mb-6 text-center">Contenu de la présentation</h2>
+            <ul class="space-y-4 text-lg text-gray-300">
+                <li class="flex items-center">
+                    <i class="fas fa-chevron-right text-amber-500 mr-3"></i>
+                    <span>Présentation du jeu</span>
+                </li>
+                <li class="flex items-center">
+                    <i class="fas fa-chevron-right text-amber-500 mr-3"></i>
+                    <span>Wireframe et architecture</span>
+                </li>
+                <li class="flex items-center">
+                    <i class="fas fa-chevron-right text-amber-500 mr-3"></i>
+                    <span>Thème graphique</span>
+                </li>
+                <li class="flex items-center">
+                    <i class="fas fa-chevron-right text-amber-500 mr-3"></i>
+                    <span>Modèle de la base de données</span>
+                </li>
+                <li class="flex items-center">
+                    <i class="fas fa-chevron-right text-amber-500 mr-3"></i>
+                    <span>Équipe projet</span>
+                </li>
+                <li class="flex items-center">
+                    <i class="fas fa-chevron-right text-amber-500 mr-3"></i>
+                    <span>Conclusion</span>
+                </li>
+            </ul>
+        </div>
+        
+        <div class="mt-12 grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl w-full">
+            <!-- Team Web -->
+            <div class="team-card rounded-lg p-4">
+                <h3 class="text-xl font-bold text-amber-400 mb-3 text-center">Team Web</h3>
+                <ul class="space-y-2 text-gray-300">
+                    <li class="flex items-center">
+                        <i class="fas fa-crown text-amber-500 mr-2"></i>
+                        <span>Rimbaud BONIFACE (LEAD)</span>
+                    </li>
+                    <li class="flex items-center">
+                        <i class="fas fa-user text-amber-500 mr-2"></i>
+                        <span>Tom KETHIRI</span>
+                    </li>
+                </ul>
+            </div>
+            
+            <!-- Team Solveur -->
+            <div class="team-card rounded-lg p-4">
+                <h3 class="text-xl font-bold text-amber-400 mb-3 text-center">Team Solveur</h3>
+                <ul class="space-y-2 text-gray-300">
+                    <li class="flex items-center">
+                        <i class="fas fa-crown text-amber-500 mr-2"></i>
+                        <span>Gaston CARDINEAUD (LEAD)</span>
+                    </li>
+                    <li class="flex items-center">
+                        <i class="fas fa-user text-amber-500 mr-2"></i>
+                        <span>Edgar LEDDA</span>
+                    </li>
+                </ul>
+            </div>
+            
+            <!-- Team Génération -->
+            <div class="team-card rounded-lg p-4">
+                <h3 class="text-xl font-bold text-amber-400 mb-3 text-center">Team Génération</h3>
+                <ul class="space-y-2 text-gray-300">
+                    <li class="flex items-center">
+                        <i class="fas fa-crown text-amber-500 mr-2"></i>
+                        <span>Simon DUMAS (LEAD)</span>
+                    </li>
+                    <li class="flex items-center">
+                        <i class="fas fa-user text-amber-500 mr-2"></i>
+                        <span>Mathilde BENNAB</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="mt-8 text-center">
+            <p class="text-lg text-amber-400 font-bold">
+                <i class="fas fa-star mr-2"></i> Responsable projet : Tom KETHIRI
+            </p>
+        </div>
+    </div>
+
+    <!-- Slide 2 - Présentation du jeu -->
+    <div id="slide2" class="slide">
+        <div class="container mx-auto h-full flex flex-col justify-center">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold text-gradient mb-4">
+                    <i class="fas fa-gamepad mr-2"></i> Présentation du jeu
+                </h2>
+            </div>
+            
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
+                <div>
+                    <div class="bg-gray-900/80 backdrop-blur-md rounded-lg p-8">
+                        <h3 class="text-2xl font-bold text-amber-400 mb-4">Mystical Dungeons</h3>
+                        
+                        <div class="space-y-6 text-gray-300">
+                            <div>
+                                <h4 class="text-xl font-bold text-amber-300 mb-2">
+                                    <i class="fas fa-question-circle mr-2"></i> Principe
+                                </h4>
+                                <p>Jeu de labyrinthe dans un style mystique/médiéval en ligne.</p>
+                            </div>
+                            
+                            <div>
+                                <h4 class="text-xl font-bold text-amber-300 mb-2">
+                                    <i class="fas fa-check-circle mr-2"></i> Fonctionnalités
+                                </h4>
+                                <ul class="space-y-3">
+                                    <li class="flex items-start">
+                                        <i class="fas fa-random text-amber-500 mt-1 mr-3"></i>
+                                        <span>Création de Map générées aléatoirement ainsi que 4 cartes de jeu </span>
+                                    </li>
+                                    <li class="flex items-start">
+                                        <i class="fas fa-edit text-amber-500 mt-1 mr-3"></i>
+                                        <span>Création de maps personnalisées par les utilisateurs</span>
+                                    </li>
+                                    <li class="flex items-start">
+                                        <i class="fas fa-users text-amber-500 mt-1 mr-3"></i>
+                                        <span>Jouer sur les maps créées par la communauté</span>
+                                    </li>
+                                    <li class="flex items-start">
+                                        <i class="fas fa-lightbulb text-amber-500 mt-1 mr-3"></i>
+                                        <span>Solveur intégré affichant la solution la plus courte et autres solutions possibles</span>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="flex justify-center">
+                    <img src="./laby1.png" alt="Preview du jeu" class="rounded-lg border border-amber-500/30 shadow-lg max-h-[40rem]">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 3 - Wireframe et architecture -->
+    <div id="slide3" class="slide">
+        <div class="container mx-auto h-full">
+            <div class="text-center mb-8">
+                <h2 class="text-3xl font-bold text-gradient">
+                    <i class="fas fa-project-diagram mr-2"></i> Wireframe et architecture
+                </h2>
+            </div>
+            
+            <div class="wireframe-container">
+                <h3 class="text-2xl font-bold text-amber-400 mb-4">3.1 : NavBar, accueil + lien entre les pages</h3>
+                <img src="./1.svg" alt="Flowchart NavBar" class="wireframe-img">
+                <p class="text-gray-300 mt-2">(1.svg)</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 4 - Wireframe et architecture (suite) -->
+    <div id="slide4" class="slide">
+        <div class="container mx-auto h-full">
+            <div class="text-center mb-8">
+                <h2 class="text-3xl font-bold text-gradient">
+                    <i class="fas fa-project-diagram mr-2"></i> Wireframe et architecture
+                </h2>
+            </div>
+            
+            <div class="wireframe-container">
+                <h3 class="text-2xl font-bold text-amber-400 mb-4">3.2 : Interface de jeu</h3>
+                <img src="./2.svg" alt="Flowchart Interface" class="wireframe-img">
+                <p class="text-gray-300 mt-2">(2.svg)</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 5 - Wireframe et architecture (suite) -->
+    <div id="slide5" class="slide">
+        <div class="container mx-auto h-full">
+            <div class="text-center mb-8">
+                <h2 class="text-3xl font-bold text-gradient">
+                    <i class="fas fa-project-diagram mr-2"></i> Wireframe et architecture
+                </h2>
+            </div>
+            
+            <div class="wireframe-container">
+                <h3 class="text-2xl font-bold text-amber-400 mb-4">3.3 : Création de map</h3>
+                <img src="./3.svg" alt="Flowchart Création" class="wireframe-img">
+                <p class="text-gray-300 mt-2">(3.svg)</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 6 - Wireframe et architecture (suite) -->
+    <div id="slide6" class="slide">
+        <div class="container mx-auto h-full">
+            <div class="text-center mb-8">
+                <h2 class="text-3xl font-bold text-gradient">
+                    <i class="fas fa-project-diagram mr-2"></i> Wireframe et architecture
+                </h2>
+            </div>
+            
+            <div class="wireframe-container">
+                <h3 class="text-2xl font-bold text-amber-400 mb-4">3.4 : Interface Admin et Profil & Statistiques</h3>
+                <img src="./4.svg" alt="Flowchart Admin" class="wireframe-img">
+                <p class="text-gray-300 mt-2">(4.svg)</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 7 - Wireframe et architecture (suite) -->
+    <div id="slide7" class="slide">
+        <div class="container mx-auto h-full">
+            <div class="text-center mb-8">
+                <h2 class="text-3xl font-bold text-gradient">
+                    <i class="fas fa-project-diagram mr-2"></i> Wireframe et architecture
+                </h2>
+            </div>
+            
+            <div class="wireframe-container">
+                <h3 class="text-2xl font-bold text-amber-400 mb-4">3.5 : Recap flowchart global</h3>
+                <img src="./full.svg" alt="Flowchart Global" class="wireframe-img" style="max-height: 70vh;">
+                <p class="text-gray-300 mt-2">(full.svg)</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 8 - Thème graphique -->
+    <div id="slide8" class="slide">
+        <div class="container mx-auto h-full flex flex-col justify-center">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold text-gradient">
+                    <i class="fas fa-palette mr-2"></i> Thème graphique
+                </h2>
+            </div>
+            
+            <!-- Description thème -->
+            <div class="bg-gray-900/80 backdrop-blur-md rounded-lg p-6 mb-8 flex flex-col lg:flex-row gap-8">
+                <div class="space-y-4 text-gray-300 lg:w-1/2">
+                    <div class="flex items-start">
+                        <span class="text-2xl mr-3">🎨</span>
+                        <div>
+                            <h4 class="text-lg font-bold text-amber-300">Thème visuel</h4>
+                            <p>Univers médiéval-fantastique, avec ambiance sombre et interface moderne.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="space-y-4 text-gray-300 lg:w-1/2">
+                    <div class="flex items-start">
+                        <span class="text-2xl mr-3">🛠️</span>
+                        <div>
+                            <h4 class="text-lg font-bold text-amber-300">Outils utilisés</h4>
+                            <ul class="space-y-2">
+                                <li class="flex items-center">
+                                    <span class="mr-2">🌀</span>
+                                    <span>TailwindCSS (framework CSS utilitaire)</span>
+                                </li>
+                                <li class="flex items-center">
+                                    <span class="mr-2">★</span>
+                                    <span>Font Awesome (bibliothèque d'icônes)</span>
+                                </li>
+                                <li class="flex items-center">
+                                    <span class="mr-2">🅶</span>
+                                    <span>Google Fonts - MedievalSharp (typographie médiévale)</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Carousel -->
+            <div class="relative">
+                <div class="carousel-container relative">
+                    <img src="./home1.png" alt="Home 1" class="carousel-img active rounded-lg w-auto max-h-[60vh] mx-auto">
+                    <img src="./home2.png" alt="Home 2" class="carousel-img rounded-lg w-auto max-h-[60vh] mx-auto">
+                    <img src="./home3.png" alt="Home 3" class="carousel-img rounded-lg w-auto max-h-[60vh] mx-auto">
+                </div>
+                <div class="flex justify-center mt-4 space-x-2">
+                    <button onclick="showCarouselSlide(1)" class="carousel-nav-btn w-8 h-8 rounded-full flex items-center justify-center">①</button>
+                    <button onclick="showCarouselSlide(2)" class="carousel-nav-btn w-8 h-8 rounded-full flex items-center justify-center">②</button>
+                    <button onclick="showCarouselSlide(3)" class="carousel-nav-btn w-8 h-8 rounded-full flex items-center justify-center">③</button>
+                </div>
+                
+                <div class="absolute top-1/2 left-0 right-0 flex justify-between px-2 transform -translate-y-1/2">
+                    <button onclick="prevCarouselSlide()" class="carousel-nav-btn w-10 h-10 rounded-full flex items-center justify-center">
+                        <i class="fas fa-chevron-left"></i>
+                    </button>
+                    <button onclick="nextCarouselSlide()" class="carousel-nav-btn w-10 h-10 rounded-full flex items-center justify-center">
+                        <i class="fas fa-chevron-right"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 9 - Base de données -->
+<div id="slide9" class="slide">
+    <div class="container mx-auto h-full flex flex-col justify-center">
+        <div class="text-center mb-12">
+            <h2 class="text-3xl font-bold text-gradient">
+                <i class="fas fa-database mr-2"></i> Base de données
+            </h2>
+        </div>
+        
+        <div class="flex flex-col lg:flex-row items-start justify-between gap-8 max-w-7xl mx-auto">
+            <div class="bg-gray-900/80 backdrop-blur-md rounded-lg p-6 lg:w-1/3"> <!-- Réduit la largeur du texte -->
+                <h3 class="text-2xl font-bold text-amber-400 mb-4">Structure de la base</h3>
+                
+                <div class="space-y-6 text-gray-300">
+                    <div>
+                        <h4 class="text-xl font-bold text-amber-300 mb-2">
+                            <i class="fas fa-table mr-2"></i> Tables principales
+                        </h4>
+                        <ul class="space-y-3">
+                            <li class="flex items-start">
+                                <i class="fas fa-user text-amber-500 mt-1 mr-3"></i>
+                                <span><strong>User</strong> : Gestion des comptes utilisateurs</span>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fas fa-map text-amber-500 mt-1 mr-3"></i>
+                                <span><strong>Map</strong> : Stockage des labyrinthes générés et créés</span>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fas fa-chart-bar text-amber-500 mt-1 mr-3"></i>
+                                <span><strong>Stats</strong> : Statistiques de jeu des utilisateurs</span>
+                            </li>
+                        </ul>
+                    </div>
+                    
+                    <div>
+                        <h4 class="text-xl font-bold text-amber-300 mb-2">
+                            <i class="fas fa-cogs mr-2"></i> Conception
+                        </h4>
+                        <ul class="space-y-3">
+                            <li class="flex items-start">
+                                <i class="fas fa-database text-amber-500 mt-1 mr-3"></i>
+                                <span><strong>map_value</strong> : Utilisation du type <code>TEXT</code> pour stocker de grandes maps jusqu'à environ 65k octets.</span>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fas fa-hashtag text-amber-500 mt-1 mr-3"></i>
+                                <span><strong>INT</strong> : Stocke des entiers sur 4 octets.</span>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fas fa-font text-amber-500 mt-1 mr-3"></i>
+                                <span><strong>VARCHAR</strong> : Stocke des chaînes de 1 à 256 octets.</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Conteneur agrandi pour le schéma -->
+            <div class="lg:w-2/3 flex justify-end"> <!-- Augmenté à 2/3 de l'espace -->
+                <img src="./bdd.svg" alt="Schéma relationnel" 
+                     class="rounded-lg border border-amber-500/30 shadow-lg w-full h-auto max-w-[1500px] scale-110"> <!-- Ajout de max-width et scale -->
+            </div>
+        </div>
+    </div>
+</div>
+
+    <!-- Slide 10 - Conclusion -->
+    <div id="slide10" class="slide flex items-center justify-center">
+        <div class="text-center">
+            <h2 class="text-7xl font-bold text-gradient mb-12">
+                Merci pour votre attention, aventuriers !
+            </h2>
+            <p class="text-4xl text-gray-300">
+                Des questions avant de sortir du donjon ?
+            </p>
+        </div>
+    </div>
+
+    <script>
+        // Gestion des slides
+        let currentSlide = 1;
+        const totalSlides = 10;
+        
+        function showSlide(n) {
+            // Masquer toutes les slides
+            document.querySelectorAll('.slide').forEach(slide => {
+                slide.classList.remove('active-slide');
+            });
+            
+            // Afficher la slide demandée
+            document.getElementById(`slide${n}`).classList.add('active-slide');
+            
+            // Mettre à jour l'indicateur
+            document.querySelectorAll('.slide-indicator').forEach((indicator, index) => {
+                if (index === n - 1) {
+                    indicator.classList.remove('bg-gray-500');
+                    indicator.classList.add('bg-amber-500');
+                } else {
+                    indicator.classList.remove('bg-amber-500');
+                    indicator.classList.add('bg-gray-500');
+                }
+            });
+            
+            currentSlide = n;
+        }
+        
+        function nextSlide() {
+            if (currentSlide < totalSlides) {
+                showSlide(currentSlide + 1);
+            } else {
+                showSlide(1);
+            }
+        }
+        
+        function prevSlide() {
+            if (currentSlide > 1) {
+                showSlide(currentSlide - 1);
+            } else {
+                showSlide(totalSlides);
+            }
+        }
+        
+        function goToSlide(n) {
+            showSlide(n);
+        }
+        
+        // Gestion du carousel
+        let currentCarouselSlide = 1;
+        const totalCarouselSlides = 3;
+        
+        function showCarouselSlide(n) {
+            // Masquer toutes les images
+            document.querySelectorAll('.carousel-img').forEach(img => {
+                img.classList.remove('active');
+            });
+            
+            // Afficher l'image demandée
+            document.querySelectorAll('.carousel-img')[n - 1].classList.add('active');
+            
+            currentCarouselSlide = n;
+        }
+        
+        function nextCarouselSlide() {
+            if (currentCarouselSlide < totalCarouselSlides) {
+                showCarouselSlide(currentCarouselSlide + 1);
+            } else {
+                showCarouselSlide(1);
+            }
+        }
+        
+        function prevCarouselSlide() {
+            if (currentCarouselSlide > 1) {
+                showCarouselSlide(currentCarouselSlide - 1);
+            } else {
+                showCarouselSlide(totalCarouselSlides);
+            }
+        }
+        
+        // Initialisation
+        document.addEventListener('DOMContentLoaded', () => {
+            showSlide(1);
+            showCarouselSlide(1);
+            
+            // Navigation au clavier
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'ArrowRight') {
+                    nextSlide();
+                } else if (e.key === 'ArrowLeft') {
+                    prevSlide();
+                }
+            });
+        });
+    </script>
+</body>
+</html>
